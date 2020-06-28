@@ -1,0 +1,90 @@
+{
+  "name": "block",
+  "displayName": "IP定位拦截插件",
+  "description": "SSCMS IP定位拦截插件能够根据IP地址阻止不需要的访问者访问网站",
+  "version": "1.0.0",
+  "license": "GPL-3.0",
+  "publisher": "sscms",
+  "engines": {
+    "sscms": "^7.0.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "内容"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/siteserver/sscms.block"
+  },
+  "icon": "/assets/block/logo.svg",
+  "output": "bin/Release/netcoreapp3.1",
+  "main": "SSCMS.Block.dll",
+  "extensions": {
+    "permissions": {
+      "block_settings": {
+        "text": "拦截设置",
+        "type": "site"
+      },
+      "block_analysis": {
+        "text": "拦截统计",
+        "type": "site"
+      },
+      "block_ip": {
+        "text": "IP地址查询",
+        "type": "site"
+      }
+    },
+    "menus": {
+      "block_all": {
+        "text": "IP定位拦截",
+        "iconClass": "fa fa-exclamation-triangle",
+        "type": "site",
+        "permissions": [
+          "block_settings",
+          "block_analysis",
+          "block_ip"
+        ],
+        "menus": {
+          "block_settings": {
+            "text": "拦截设置",
+            "link": "/ss-admin/block/settings/",
+            "permissions": ["block_settings"],
+            "order": 1
+          },
+          "block_analysis": {
+            "text": "拦截统计",
+            "link": "/ss-admin/block/analysis/",
+            "permissions": ["block_analysis"],
+            "order": 2
+          },
+          "block_ip": {
+            "text": "IP地址查询",
+            "link": "/ss-admin/block/ip/",
+            "permissions": ["block_ip"],
+            "order": 3
+          }
+        }
+      }
+    },
+    "tables": {
+      "sscms_block": {
+        "columns": [
+          {
+            "attributeName": "SiteId",
+            "dataType": "Integer"
+          },
+          {
+            "attributeName": "BlockDate",
+            "dataType": "DateTime"
+          },
+          {
+            "attributeName": "BlockCount",
+            "dataType": "Integer"
+          }
+        ]
+      }
+    }
+  }
+}
