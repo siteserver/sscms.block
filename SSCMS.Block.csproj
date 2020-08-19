@@ -6,20 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Main.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="MaxMind.GeoIP2" Version="3.2.0" />
     <ProjectReference Include="..\..\..\SSCMS\SSCMS.csproj" />
     <Content Update="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Controllers\Admin\SettingsLayerAreaAddController.Dto.cs">
-      <DependentUpon>SettingsLayerAreaAddController.cs</DependentUpon>
-    </Compile>
+    <Content Include="README.md" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

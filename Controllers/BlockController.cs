@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Block.Abstractions;
-using SSCMS.Block.Implements;
+using SSCMS.Block.Core;
 using SSCMS.Services;
 
 namespace SSCMS.Block.Controllers

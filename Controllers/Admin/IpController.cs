@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Block.Abstractions;
-using SSCMS.Block.Implements;
+using SSCMS.Block.Core;
 using SSCMS.Dto;
 using SSCMS.Services;
 using SSCMS.Utils;

@@ -25,22 +25,22 @@
     "permissions": {
       "block_settings": {
         "text": "拦截设置",
-        "type": "site"
+        "type": ["web", "wx"]
       },
       "block_analysis": {
         "text": "拦截统计",
-        "type": "site"
+        "type": ["web", "wx"]
       },
       "block_ip": {
         "text": "IP地址查询",
-        "type": "site"
+        "type": ["web", "wx"]
       }
     },
     "menus": {
       "block_all": {
         "text": "IP定位拦截",
         "iconClass": "fa fa-exclamation-triangle",
-        "type": "site",
+        "type": ["web", "wx"],
         "permissions": [
           "block_settings",
           "block_analysis",

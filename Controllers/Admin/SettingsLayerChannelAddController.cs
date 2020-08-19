@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Block.Implements;
+using SSCMS.Block.Core;
 using SSCMS.Block.Models;
 using SSCMS.Dto;
 using SSCMS.Repositories;

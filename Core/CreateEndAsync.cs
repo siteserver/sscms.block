@@ -1,24 +1,25 @@
 ﻿using System.Threading.Tasks;
 using SSCMS.Block.Abstractions;
+using SSCMS.Context;
 using SSCMS.Plugins;
 using SSCMS.Services;
 
-namespace SSCMS.Block.Implements
+namespace SSCMS.Block.Core
 {
-    public class PluginAfterStlParseAsync : IPluginAfterStlParseAsync
+    public class CreateEndAsync : IPluginCreateEndAsync
     {
         private readonly IPathManager _pathManager;
         private readonly IBlockManager _blockManager;
         private readonly IPlugin _plugin;
 
-        public PluginAfterStlParseAsync(IPathManager pathManager, IPluginManager pluginManager, IBlockManager blockManager)
+        public CreateEndAsync(IPathManager pathManager, IPluginManager pluginManager, IBlockManager blockManager)
         {
             _pathManager = pathManager;
             _blockManager = blockManager;
             _plugin = pluginManager.Current;
         }
 
-        public async Task AfterStlParseAsync(IStlParseContext context)
+        public async Task ParseAsync(IParseContext context)
         {
             var config = await _blockManager.GetConfigAsync(context.SiteId);
             if (!config.IsEnabled) return;

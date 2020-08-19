@@ -6,7 +6,7 @@ using Datory;
 using SSCMS.Block.Abstractions;
 using SSCMS.Services;
 
-namespace SSCMS.Block.Implements
+namespace SSCMS.Block.Core
 {
     public class BlockRepository : IBlockRepository
     {

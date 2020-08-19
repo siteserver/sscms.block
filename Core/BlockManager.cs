@@ -8,12 +8,11 @@ using MaxMind.GeoIP2;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Block.Abstractions;
 using SSCMS.Block.Models;
-using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Block.Implements
+namespace SSCMS.Block.Core
 {
     public class BlockManager : IBlockManager
     {
