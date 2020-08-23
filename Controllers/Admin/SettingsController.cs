@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Block.Abstractions;
 using SSCMS.Block.Core;
 using SSCMS.Block.Models;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -13,7 +14,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Block.Controllers.Admin
 {
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsController : ControllerBase
     {

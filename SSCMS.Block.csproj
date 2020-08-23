@@ -8,9 +8,10 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="MaxMind.GeoIP2" Version="3.2.0" />
-    <ProjectReference Include="..\..\..\SSCMS\SSCMS.csproj" />
+    <PackageReference Include="SSCMS" Version="7.0.0" />
     <Content Update="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="README.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="CHANGELOG.md" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
