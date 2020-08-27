@@ -10,13 +10,11 @@ namespace SSCMS.Block.Core
     {
         private readonly IPathManager _pathManager;
         private readonly IBlockManager _blockManager;
-        private readonly IPlugin _plugin;
 
-        public CreateEndAsync(IPathManager pathManager, IPluginManager pluginManager, IBlockManager blockManager)
+        public CreateEndAsync(IPathManager pathManager, IBlockManager blockManager)
         {
             _pathManager = pathManager;
             _blockManager = blockManager;
-            _plugin = pluginManager.Current;
         }
 
         public async Task ParseAsync(IParseContext context)
@@ -42,7 +40,7 @@ namespace SSCMS.Block.Core
             var urlPrefix = _pathManager.GetRootUrl("/assets/block");
             var apiUrl = _pathManager.GetApiUrl();
 
-            context.HeadCodes[_plugin.PluginId] = $@"
+            context.HeadCodes[BlockManager.PluginId] = $@"
 <style>body{{display: none !important}}</style>
 <script src=""{urlPrefix}/lib/es6-promise.auto.min.js"" type=""text/javascript""></script>
 <script src=""{urlPrefix}/lib/axios-0.18.0.min.js"" type=""text/javascript""></script>

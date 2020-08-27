@@ -8,7 +8,6 @@ using MaxMind.GeoIP2;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Block.Abstractions;
 using SSCMS.Block.Models;
-using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -17,14 +16,14 @@ namespace SSCMS.Block.Core
 {
     public class BlockManager : IBlockManager
     {
+        public const string PluginId = "sscms.block";
+
         private readonly ISettingsManager _settingsManager;
-        private readonly IPlugin _plugin;
         private readonly IPluginConfigRepository _pluginConfigRepository;
         private readonly IBlockRepository _blockRepository;
 
         private static DatabaseReader _reader;
         private static List<Area> _areas;
-
 
         public BlockManager(ISettingsManager settingsManager, IPluginManager pluginManager, IPluginConfigRepository pluginConfigRepository, IBlockRepository blockRepository)
         {
@@ -32,17 +31,17 @@ namespace SSCMS.Block.Core
             _pluginConfigRepository = pluginConfigRepository;
             _blockRepository = blockRepository;
 
-            _plugin = pluginManager.Current;
+            var plugin = pluginManager.GetPlugin(PluginId);
 
             if (_areas == null)
             {
                 _areas = new List<Area>();
 
                 var locationsEn =
-                    PathUtils.Combine(_plugin.WebRootPath,
+                    PathUtils.Combine(plugin.WebRootPath,
                         "assets/block/GeoLite2-Country-CSV_20190423/GeoLite2-Country-Locations-en.csv");
                 var locationsCn =
-                    PathUtils.Combine(_plugin.WebRootPath,
+                    PathUtils.Combine(plugin.WebRootPath,
                         "assets/block/GeoLite2-Country-CSV_20190423/GeoLite2-Country-Locations-zh-CN.csv");
                 var enCsv = File.ReadAllLines(locationsEn);
                 var cnCsv = File.ReadAllLines(locationsCn);
@@ -82,7 +81,7 @@ namespace SSCMS.Block.Core
 
             if (_reader == null)
             {
-                var filePath = PathUtils.Combine(_plugin.WebRootPath,
+                var filePath = PathUtils.Combine(plugin.WebRootPath,
                     "assets/block/GeoLite2-Country_20190423/GeoLite2-Country.mmdb");
                 _reader = new DatabaseReader(filePath);
             }
@@ -227,14 +226,12 @@ namespace SSCMS.Block.Core
 
         public async Task<Config> GetConfigAsync(int siteId)
         {
-            var pluginId = _plugin.PluginId;
-            return await _pluginConfigRepository.GetConfigAsync<Config>(pluginId, siteId) ?? new Config();
+            return await _pluginConfigRepository.GetConfigAsync<Config>(PluginId, siteId) ?? new Config();
         }
 
         public async Task<bool> SetConfigAsync(int siteId, Config config)
         {
-            var pluginId = _plugin.PluginId;
-            return await _pluginConfigRepository.SetConfigAsync(pluginId, siteId, config);
+            return await _pluginConfigRepository.SetConfigAsync(PluginId, siteId, config);
         }
     }
 }

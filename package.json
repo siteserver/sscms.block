@@ -2,7 +2,7 @@
   "name": "block",
   "displayName": "IP定位拦截插件",
   "description": "SSCMS IP定位拦截插件能够根据IP地址阻止不需要的访问者访问网站",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "GPL-3.0",
   "publisher": "sscms",
   "engines": {
