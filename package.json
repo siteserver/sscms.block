@@ -2,7 +2,7 @@
   "name": "block",
   "displayName": "IP定位拦截插件",
   "description": "SSCMS IP定位拦截插件能够根据IP地址阻止不需要的访问者访问网站",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "GPL-3.0",
   "publisher": "sscms",
   "engines": {
@@ -21,6 +21,8 @@
   "icon": "/assets/block/logo.svg",
   "output": "",
   "main": "SSCMS.Block.dll",
+  "applyToSites": true,
+  "applyToChannels": false,
   "extensions": {
     "permissions": {
       "block_settings": {
@@ -31,7 +33,7 @@
         "text": "拦截统计",
         "type": ["web", "wx"]
       },
-      "block_ip": {
+      "block_query": {
         "text": "IP地址查询",
         "type": ["web", "wx"]
       }
@@ -44,7 +46,7 @@
         "permissions": [
           "block_settings",
           "block_analysis",
-          "block_ip"
+          "block_query"
         ],
         "menus": {
           "block_settings": {
@@ -59,17 +61,69 @@
             "permissions": ["block_analysis"],
             "order": 2
           },
-          "block_ip": {
+          "block_query": {
             "text": "IP地址查询",
-            "link": "/ss-admin/block/ip/",
-            "permissions": ["block_ip"],
+            "link": "/ss-admin/block/query/",
+            "permissions": ["block_query"],
             "order": 3
           }
         }
       }
     },
     "tables": {
-      "sscms_block": {
+      "sscms_block_rule": {
+        "columns": [
+          {
+            "attributeName": "SiteId",
+            "dataType": "Integer"
+          },
+          {
+            "attributeName": "RuleName",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "AreaType",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "BlockAreas",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "AllowList",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "BlockList",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "IsAllChannels",
+            "dataType": "Boolean"
+          },
+          {
+            "attributeName": "BlockChannels",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "BlockMethod",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "RedirectUrl",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "Warning",
+            "dataType": "VarChar"
+          },
+          {
+            "attributeName": "Password",
+            "dataType": "VarChar"
+          }
+        ]
+      },
+      "sscms_block_analysis": {
         "columns": [
           {
             "attributeName": "SiteId",

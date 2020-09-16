@@ -9,7 +9,8 @@ namespace SSCMS.Block
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IBlockRepository, BlockRepository>();
+            services.AddScoped<IRuleRepository, RuleRepository>();
+            services.AddScoped<IAnalysisRepository, AnalysisRepository>();
             services.AddScoped<IBlockManager, BlockManager>();
         }
     }

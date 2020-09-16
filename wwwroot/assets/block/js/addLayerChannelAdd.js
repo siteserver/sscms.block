@@ -1,4 +1,4 @@
-﻿var $url = '/block/settingsLayerChannelAdd';
+﻿var $url = '/block/addLayerChannelAdd';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),

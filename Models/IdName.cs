@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-namespace SSCMS.Block.Models
+﻿namespace SSCMS.Block.Models
 {
     public class IdName
     {

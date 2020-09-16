@@ -8,22 +8,22 @@ using SSCMS.Services;
 
 namespace SSCMS.Block.Core
 {
-    public class BlockRepository : IBlockRepository
+    public class AnalysisRepository : IAnalysisRepository
     {
-        private readonly Repository<Models.Block> _repository;
+        private readonly Repository<Models.Analysis> _repository;
 
-        public BlockRepository(ISettingsManager settingsManager)
+        public AnalysisRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<Models.Block>(settingsManager.Database);
+            _repository = new Repository<Models.Analysis>(settingsManager.Database);
         }
 
         private static class Attr
         {
-            public const string SiteId = nameof(Models.Block.SiteId);
+            public const string SiteId = nameof(Models.Analysis.SiteId);
 
-            public const string BlockDate = nameof(Models.Block.BlockDate);
+            public const string BlockDate = nameof(Models.Analysis.BlockDate);
 
-            public const string BlockCount = nameof(Models.Block.BlockCount);
+            public const string BlockCount = nameof(Models.Analysis.BlockCount);
         }
 
         public async Task AddBlockAsync(int siteId)
@@ -43,7 +43,7 @@ namespace SSCMS.Block.Core
             }
             else
             {
-                await _repository.InsertAsync(new Models.Block
+                await _repository.InsertAsync(new Models.Analysis
                 {
                     SiteId = siteId,
                     BlockDate = now,

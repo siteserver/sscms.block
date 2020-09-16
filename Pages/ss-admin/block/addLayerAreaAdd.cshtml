@@ -2,14 +2,19 @@
 @{ Layout = "_Layout"; }
 
 <el-form size="small" ref="form" :model="form" label-width="120px">
-  <el-form-item v-if="channels" label="拦截以下页面" prop="channelIds" :rules="{ required: true, message: '请选择需要拦截的页面' }">
-    <el-cascader
-      v-model="form.channelIds"
-      :options="channels"
-      :props="{ checkStrictly: true, multiple: true }"
+  <el-form-item v-if="areas" label="拦截区域" prop="areaIds" :rules="{ required: true, message: '请选择拦截区域' }">
+    <el-select
+      multiple
+      v-model="form.areaIds"
       filterable
-      placeholder="请选择页面">
-    </el-cascader>
+      placeholder="请选择拦截区域">
+      <el-option
+        v-for="item in areas"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
   </el-form-item>
 </el-form>
 
@@ -22,5 +27,5 @@
 </el-row>
 
 @section Scripts{
-  <script src="/assets/block/js/settingsLayerChannelAdd.js" type="text/javascript"></script>
+  <script src="/assets/block/js/addLayerAreaAdd.js" type="text/javascript"></script>
 }

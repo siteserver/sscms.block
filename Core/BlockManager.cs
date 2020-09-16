@@ -8,7 +8,6 @@ using MaxMind.GeoIP2;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Block.Abstractions;
 using SSCMS.Block.Models;
-using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -19,17 +18,17 @@ namespace SSCMS.Block.Core
         public const string PluginId = "sscms.block";
 
         private readonly ISettingsManager _settingsManager;
-        private readonly IPluginConfigRepository _pluginConfigRepository;
-        private readonly IBlockRepository _blockRepository;
+        private readonly IAnalysisRepository _analysisRepository;
+        private readonly IRuleRepository _ruleRepository;
 
         private static DatabaseReader _reader;
         private static List<Area> _areas;
 
-        public BlockManager(ISettingsManager settingsManager, IPluginManager pluginManager, IPluginConfigRepository pluginConfigRepository, IBlockRepository blockRepository)
+        public BlockManager(ISettingsManager settingsManager, IPluginManager pluginManager, IAnalysisRepository analysisRepository, IRuleRepository ruleRepository)
         {
             _settingsManager = settingsManager;
-            _pluginConfigRepository = pluginConfigRepository;
-            _blockRepository = blockRepository;
+            _analysisRepository = analysisRepository;
+            _ruleRepository = ruleRepository;
 
             var plugin = pluginManager.GetPlugin(PluginId);
 
@@ -114,47 +113,60 @@ namespace SSCMS.Block.Core
                 @"(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])$)|(^172\.([1][6-9]|[2][0-9]|[3][0-1])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])$)|(^10\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])$)");
         }
 
-        public async Task<bool> IsAllowedAsync(int siteId, Config config, Area area, string sessionId)
+        public async Task<(bool, Rule)> IsBlockedAsync(int siteId, string ipAddress, string sessionId)
         {
-            if (!config.IsEnabled) return true;
+            var rules = await _ruleRepository.GetAllAsync(siteId);
+            if (rules == null || rules.Count == 0) return (false, null);
 
-            if (config.BlockMethod == nameof(config.Password) && !string.IsNullOrEmpty(sessionId))
+            var geoNameId = GetGeoNameId(ipAddress);
+            var area = GetArea(geoNameId);
+
+            foreach (var rule in rules)
             {
-                if (config.Password == _settingsManager.Decrypt(sessionId))
+                if (rule.BlockMethod == BlockMethod.Password && !string.IsNullOrEmpty(sessionId))
                 {
-                    return true;
+                    if (rule.Password == _settingsManager.Decrypt(sessionId))
+                    {
+                        continue;
+                    }
+                }
+
+                var isMatch = false;
+                if (area != null)
+                {
+                    if (rule.BlockAreas != null && rule.BlockAreas.Contains(area.GeoNameId))
+                    {
+                        isMatch = true;
+                    }
+                }
+
+                var isBlocked = false;
+                if (rule.AreaType == AreaType.Includes)
+                {
+                    isBlocked = !isMatch;
+                }
+                else if (rule.AreaType == AreaType.Excludes)
+                {
+                    isBlocked = isMatch;
+                }
+
+                if (!isBlocked)
+                {
+                    isBlocked = !PageUtils.IsAllowed(ipAddress, rule.BlockList, rule.AllowList);
+                }
+
+                if (isBlocked)
+                {
+                    await _analysisRepository.AddBlockAsync(siteId);
+                    return (true, rule);
                 }
             }
-            
-            var isMatch = false;
-            if (area != null)
-            {
-                if (config.BlockAreas != null && config.BlockAreas.Contains(area.GeoNameId))
-                {
-                    isMatch = true;
-                }
-            }
 
-            bool isAllowed;
-            if (config.IsAllAreas)
-            {
-                isAllowed = isMatch;
-            }
-            else
-            {
-                isAllowed = !isMatch;
-            }
-
-            if (!isAllowed)
-            {
-                await _blockRepository.AddBlockAsync(siteId);
-            }
-
-            return isAllowed;
+            return (false, null);
         }
 
         public const string PermissionsAnalysis = "block_analysis";
-        public const string PermissionsIp = "block_ip";
+        public const string PermissionsQuery = "block_query";
         public const string PermissionsSettings = "block_settings";
 
         public const int LocalGeoNameId = 10000;
@@ -222,16 +234,6 @@ namespace SSCMS.Block.Core
             }
 
             return result;
-        }
-
-        public async Task<Config> GetConfigAsync(int siteId)
-        {
-            return await _pluginConfigRepository.GetConfigAsync<Config>(PluginId, siteId) ?? new Config();
-        }
-
-        public async Task<bool> SetConfigAsync(int siteId, Config config)
-        {
-            return await _pluginConfigRepository.SetConfigAsync(PluginId, siteId, config);
         }
     }
 }

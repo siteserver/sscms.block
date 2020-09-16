@@ -12,10 +12,6 @@ namespace SSCMS.Block.Abstractions
 
         int GetGeoNameId(string ipAddress);
 
-        Task<bool> IsAllowedAsync(int siteId, Config config, Area area, string sessionId);
-
-        Task<Config> GetConfigAsync(int siteId);
-
-        Task<bool> SetConfigAsync(int siteId, Config config);
+        Task<(bool, Rule)> IsBlockedAsync(int siteId, string ipAddress, string sessionId);
     }
 }

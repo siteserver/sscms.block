@@ -9,29 +9,32 @@ namespace SSCMS.Block.Core
     public class CreateEndAsync : IPluginCreateEndAsync
     {
         private readonly IPathManager _pathManager;
-        private readonly IBlockManager _blockManager;
+        private readonly IRuleRepository _ruleRepository;
 
-        public CreateEndAsync(IPathManager pathManager, IBlockManager blockManager)
+        public CreateEndAsync(IPathManager pathManager, IRuleRepository ruleRepository)
         {
             _pathManager = pathManager;
-            _blockManager = blockManager;
+            _ruleRepository = ruleRepository;
         }
 
         public async Task ParseAsync(IParseContext context)
         {
-            var config = await _blockManager.GetConfigAsync(context.SiteId);
-            if (!config.IsEnabled) return;
+            var rules = await _ruleRepository.GetAllAsync(context.SiteId);
+            if (rules == null || rules.Count == 0) return;
 
             var isChannel = false;
-            if (config.IsAllChannels)
+            foreach (var rule in rules)
             {
-                isChannel = true;
-            }
-            else
-            {
-                if (config.BlockChannels != null && config.BlockChannels.Contains(context.ChannelId))
+                if (rule.IsAllChannels)
                 {
                     isChannel = true;
+                    break;
+                }
+
+                if (rule.BlockChannels != null && rule.BlockChannels.Contains(context.ChannelId))
+                {
+                    isChannel = true;
+                    break;
                 }
             }
 

@@ -1,18 +1,19 @@
-﻿var $url = '/block/settingsLayerAreaAdd';
+var $url = '/block/query';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
-  areas: null,
   form: {
-    areaIds: null
-  }
+    ipAddress: null
+  },
+  submitted: false,
+  isAllowed: null,
+  area: null
 });
 
 var methods = {
   apiGet: function () {
     var $this = this;
 
-    utils.loading(this, true);
     $api.get($url, {
       params: {
         siteId: this.siteId
@@ -20,8 +21,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.areas = res.areas;
-      $this.form.areaIds = null;
+      $this.form.ipAddress = res.value;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -29,30 +29,31 @@ var methods = {
     });
   },
 
-  apiSubmit: function() {
+  apiSubmit: function () {
     var $this = this;
 
     utils.loading(this, true);
     $api.post($url, {
       siteId: this.siteId,
-      areaIds: this.form.areaIds
+      ipAddress: this.form.ipAddress
     }).then(function (response) {
       var res = response.data;
 
-      var areas = res.areas;
-      areas.forEach(function (area) {
-        parent.$vue.addArea(
-          area.id,
-          area.name
-        );
-      });
-      
-      utils.closeLayer();
+      $this.submitted = true;
+      $this.isAllowed = res.isAllowed;
+      $this.area = res.area;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  getArea: function() {
+    if (this.area) {
+      return this.area.areaEn + '(' + this.area.areaCn + ')';
+    }
+    return '未知区域';
   },
 
   btnSubmitClick: function () {
@@ -62,15 +63,11 @@ var methods = {
         $this.apiSubmit();
       }
     });
-  },
-
-  btnCancelClick: function () {
-    utils.closeLayer();
-  },
+  }
 };
 
 var $vue = new Vue({
-  el: '#main',
+  el: "#main",
   data: data,
   methods: methods,
   created: function () {

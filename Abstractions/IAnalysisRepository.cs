@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SSCMS.Block.Abstractions
 {
-    public interface IBlockRepository
+    public interface IAnalysisRepository
     {
         Task AddBlockAsync(int siteId);
 

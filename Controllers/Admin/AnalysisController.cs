@@ -1,12 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Block.Abstractions;
-using SSCMS.Block.Core;
 using SSCMS.Configuration;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Block.Controllers.Admin
 {
@@ -17,31 +14,23 @@ namespace SSCMS.Block.Controllers.Admin
         private const string Route = "block/analysis";
 
         private readonly IAuthManager _authManager;
-        private readonly IBlockRepository _blockRepository;
+        private readonly IAnalysisRepository _analysisRepository;
 
-        public AnalysisController(IAuthManager authManager, IBlockRepository blockRepository)
+        public AnalysisController(IAuthManager authManager, IAnalysisRepository analysisRepository)
         {
             _authManager = authManager;
-            _blockRepository = blockRepository;
+            _analysisRepository = analysisRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> GetAnalysis([FromQuery] GetRequest request)
+        public class GetRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, BlockManager.PermissionsAnalysis))
-            {
-                return Unauthorized();
-            }
+            public int SiteId { get; set; }
+        }
 
-            var blockedList = await _blockRepository.GetMonthlyBlockedListAsync(request.SiteId);
-            var labels = blockedList.Select(x => x.Key).ToList();
-            var data = blockedList.Select(x => x.Value).ToList();
-
-            return new GetResult
-            {
-                Days = labels,
-                Count = data
-            };
+        public class GetResult
+        {
+            public List<string> Days { get; set; }
+            public List<int> Count { get; set; }
         }
     }
 }

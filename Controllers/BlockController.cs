@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SSCMS.Block.Abstractions;
-using SSCMS.Block.Core;
+using SSCMS.Block.Models;
 using SSCMS.Services;
 
 namespace SSCMS.Block.Controllers
@@ -13,51 +12,39 @@ namespace SSCMS.Block.Controllers
 
         private readonly ISettingsManager _settingsManager;
         private readonly IBlockManager _blockManager;
+        private readonly IRuleRepository _ruleRepository;
 
-        public BlockController(ISettingsManager settingsManager, IBlockManager blockManager)
+        public BlockController(ISettingsManager settingsManager, IBlockManager blockManager, IRuleRepository ruleRepository)
         {
             _settingsManager = settingsManager;
             _blockManager = blockManager;
+            _ruleRepository = ruleRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<QueryResult>> Query([FromQuery] QueryRequest request)
+        public class QueryRequest
         {
-            var config = await _blockManager.GetConfigAsync(request.SiteId);
-
-            var ipAddress = BlockManager.GetIpAddress(Request);
-            var geoNameId = _blockManager.GetGeoNameId(ipAddress);
-            var areaInfo = _blockManager.GetArea(geoNameId);
-            var isAllowed = await _blockManager.IsAllowedAsync(request.SiteId, config, areaInfo, request.SessionId);
-            var blockMethod = config.BlockMethod;
-            var redirectUrl = config.RedirectUrl;
-            var warning = config.Warning;
-
-            return new QueryResult
-            {
-                IsAllowed = isAllowed,
-                BlockMethod = blockMethod,
-                RedirectUrl = redirectUrl,
-                Warning = warning
-            };
+            public int SiteId { get; set; }
+            public string SessionId { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<AuthResult>> Auth([FromBody] AuthRequest request)
+        public class QueryResult
         {
-            var config = await _blockManager.GetConfigAsync(request.SiteId);
+            public bool IsAllowed { get; set; }
+            public BlockMethod BlockMethod { get; set; }
+            public string RedirectUrl { get; set; }
+            public string Warning { get; set; }
+        }
 
-            var sessionId = string.Empty;
-            if (config.Password == request.Password)
-            {
-                sessionId = _settingsManager.Encrypt(request.Password);
-            }
+        public class AuthRequest
+        {
+            public int SiteId { get; set; }
+            public string Password { get; set; }
+        }
 
-            return new AuthResult
-            {
-                Success = config.Password == request.Password,
-                SessionId = sessionId
-            };
+        public class AuthResult
+        {
+            public bool Success { get; set; }
+            public string SessionId { get; set; }
         }
     }
 }
