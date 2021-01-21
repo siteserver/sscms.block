@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using SSCMS.Block.Abstractions;
+using SSCMS.Configuration;
 using SSCMS.Parse;
 using SSCMS.Plugins;
+using SSCMS.Repositories;
 using SSCMS.Services;
 
 namespace SSCMS.Block.Core
@@ -9,11 +11,13 @@ namespace SSCMS.Block.Core
     public class CreateEndAsync : IPluginCreateEndAsync
     {
         private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IRuleRepository _ruleRepository;
 
-        public CreateEndAsync(IPathManager pathManager, IRuleRepository ruleRepository)
+        public CreateEndAsync(IPathManager pathManager, ISiteRepository siteRepository, IRuleRepository ruleRepository)
         {
             _pathManager = pathManager;
+            _siteRepository = siteRepository;
             _ruleRepository = ruleRepository;
         }
 
@@ -40,8 +44,10 @@ namespace SSCMS.Block.Core
 
             if (!isChannel) return;
 
-            var urlPrefix = _pathManager.GetRootUrl("/assets/block");
-            var apiUrl = _pathManager.GetApiUrl();
+            var site = await _siteRepository.GetAsync(context.SiteId);
+
+            var urlPrefix = _pathManager.GetApiHostUrl(site, "/assets/block");
+            var apiUrl = _pathManager.GetApiHostUrl(site, Constants.ApiPrefix);
 
             context.HeadCodes[BlockManager.PluginId] = $@"
 <style>body{{display: none !important}}</style>
