@@ -16,6 +16,7 @@ namespace SSCMS.Block.Controllers.Admin
     public partial class SettingsController : ControllerBase
     {
         private const string Route = "block/settings";
+        private const string RouteDelete = "block/settings/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IChannelRepository _channelRepository;

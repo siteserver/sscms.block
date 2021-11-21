@@ -113,6 +113,80 @@ namespace SSCMS.Block.Core
                 @"(^192\.168\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])$)|(^172\.([1][6-9]|[2][0-9]|[3][0-1])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])$)|(^10\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])\.([0-9]|[0-9][0-9]|[0-2][0-5][0-5])$)");
         }
 
+        private static void AddRestrictionToIpList(IpList list, string restriction)
+        {
+            if (string.IsNullOrEmpty(restriction)) return;
+
+            if (StringUtils.Contains(restriction, "-"))
+            {
+                restriction = restriction.Trim(' ', '-');
+                var arr = restriction.Split('-');
+                list.AddRange(arr[0].Trim(), arr[1].Trim());
+            }
+            else if (StringUtils.Contains(restriction, "*"))
+            {
+                var ipPrefix = restriction.Substring(0, restriction.IndexOf('*'));
+                ipPrefix = ipPrefix.Trim(' ', '.');
+                var dotNum = StringUtils.GetCount(".", ipPrefix);
+
+                string ipNumber;
+                string mask;
+                if (dotNum == 0)
+                {
+                    ipNumber = ipPrefix + ".0.0.0";
+                    mask = "255.0.0.0";
+                }
+                else if (dotNum == 1)
+                {
+                    ipNumber = ipPrefix + ".0.0";
+                    mask = "255.255.0.0";
+                }
+                else
+                {
+                    ipNumber = ipPrefix + ".0";
+                    mask = "255.255.255.0";
+                }
+                list.Add(ipNumber, mask);
+            }
+            else
+            {
+                list.Add(restriction);
+            }
+        }
+
+        private static bool IsAllowed(string ipAddress, List<string> blockList, List<string> allowList)
+        {
+            var isAllowed = true;
+
+            if (blockList != null && blockList.Count > 0)
+            {
+                var list = new IpList();
+                foreach (var restriction in blockList)
+                {
+                    AddRestrictionToIpList(list, restriction);
+                }
+                if (list.CheckNumber(ipAddress))
+                {
+                    isAllowed = false;
+                }
+            }
+            else if (allowList != null && allowList.Count > 0)
+            {
+                isAllowed = false;
+                var list = new IpList();
+                foreach (var restriction in allowList)
+                {
+                    AddRestrictionToIpList(list, restriction);
+                }
+                if (list.CheckNumber(ipAddress))
+                {
+                    isAllowed = true;
+                }
+            }
+
+            return isAllowed;
+        }
+
         public async Task<(bool, Rule)> IsBlockedAsync(int siteId, string ipAddress, string sessionId)
         {
             var rules = await _ruleRepository.GetAllAsync(siteId);
@@ -152,7 +226,7 @@ namespace SSCMS.Block.Core
 
                 if (!isBlocked)
                 {
-                    isBlocked = !PageUtils.IsAllowed(ipAddress, rule.BlockList, rule.AllowList);
+                    isBlocked = !IsAllowed(ipAddress, rule.BlockList, rule.AllowList);
                 }
 
                 if (isBlocked)

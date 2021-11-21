@@ -1,4 +1,5 @@
 var $url = '/block/settings';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -29,11 +30,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: $this.siteId,
-        ruleId: item.id
-      }
+    $api.post($urlDelete, {
+      siteId: $this.siteId,
+      ruleId: item.id
     }).then(function (response) {
       var res = response.data;
 
