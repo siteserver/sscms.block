@@ -50,7 +50,7 @@ namespace SSCMS.Block.Core
             var apiUrl = _pathManager.GetApiHostUrl(site, Constants.ApiPrefix);
 
             context.HeadCodes[BlockManager.PluginId] = $@"
-<style>body{{display: none !important}}</style>
+<style>body{{display: none;}}</style>
 <script src=""{urlPrefix}/lib/es6-promise.auto.min.js"" type=""text/javascript""></script>
 <script src=""{urlPrefix}/lib/axios-0.18.0.min.js"" type=""text/javascript""></script>
 <script src=""{urlPrefix}/lib/sweetalert2-7.28.4.all.min.js"" type=""text/javascript""></script>

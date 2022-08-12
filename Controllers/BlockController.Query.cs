@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Block.Core;
 using SSCMS.Block.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Block.Controllers
 {
@@ -10,7 +10,7 @@ namespace SSCMS.Block.Controllers
         [HttpGet, Route(Route)]
         public async Task<ActionResult<QueryResult>> Query([FromQuery] QueryRequest request)
         {
-            var ipAddress = BlockManager.GetIpAddress(Request);
+            var ipAddress = PageUtils.GetIpAddress(Request);
             var (isBlocked, rule) = await _blockManager.IsBlockedAsync(request.SiteId, ipAddress, request.SessionId);
 
             var blockMethod = BlockMethod.RedirectUrl;

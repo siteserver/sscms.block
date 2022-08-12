@@ -7,7 +7,6 @@ var siteId = blockScript.getAttribute("data-site-id") || "";
 
 var blockApi = axios.create({
   baseURL: apiUrl + "/block/",
-  params: { siteId: siteId },
   withCredentials: true
 });
 
@@ -17,12 +16,13 @@ var blockAuthen = function(password) {
   Swal.showLoading();
   blockApi
     .post("", {
+      siteId: siteId,
       password: password
     })
     .then(function(response) {
       var res = response.data;
 
-      if (res.value) {
+      if (res.success) {
         sessionStorage.setItem('ss-block-session-id', res.sessionId);
 
         document.body.innerHTML = bodyHtml;
@@ -45,13 +45,14 @@ var blockAuthen = function(password) {
 blockApi
   .get("", {
     params: {
+      siteId: siteId,
       sessionId: sessionStorage.getItem('ss-block-session-id')
     }
   })
   .then(function(response) {
     var res = response.data;
 
-    var isAllowed = res.value;
+    var isAllowed = res.isAllowed;
     var blockMethod = res.blockMethod;
     var redirectUrl = res.redirectUrl;
     var warning = res.warning;

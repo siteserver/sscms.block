@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MaxMind.GeoIP2;
-using Microsoft.AspNetCore.Http;
 using SSCMS.Block.Abstractions;
 using SSCMS.Block.Models;
 using SSCMS.Services;
@@ -89,10 +87,10 @@ namespace SSCMS.Block.Core
         public List<IdName> GetAreas()
         {
             return _areas.Select(x => new IdName
-                {
-                    Id = x.GeoNameId,
-                    Name = $"{x.AreaEn}({x.AreaCn})"
-                })
+            {
+                Id = x.GeoNameId,
+                Name = $"{x.AreaEn}({x.AreaCn})"
+            })
                 .ToList();
         }
 
@@ -104,7 +102,7 @@ namespace SSCMS.Block.Core
         public int GetGeoNameId(string ipAddress)
         {
             if (IsLocalIp(ipAddress)) return LocalGeoNameId;
-            return _reader.TryCountry(ipAddress, out var response) ? (int) response.Country.GeoNameId : 0;
+            return _reader.TryCountry(ipAddress, out var response) ? (int)response.Country.GeoNameId : 0;
         }
 
         private static bool IsLocalIp(string ipAddress)
@@ -217,11 +215,11 @@ namespace SSCMS.Block.Core
                 var isBlocked = false;
                 if (rule.AreaType == AreaType.Includes)
                 {
-                    isBlocked = !isMatch;
+                    isBlocked = isMatch;
                 }
                 else if (rule.AreaType == AreaType.Excludes)
                 {
-                    isBlocked = isMatch;
+                    isBlocked = !isMatch;
                 }
 
                 if (!isBlocked)
@@ -252,62 +250,6 @@ namespace SSCMS.Block.Core
         private static bool IsIpAddress(string ip)
         {
             return Regex.IsMatch(ip, @"^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$");
-        }
-
-        public static string GetIpAddress(HttpRequest request)
-        {
-            var result = string.Empty;
-
-            try
-            {
-                result = request.Headers["HTTP_X_FORWARDED_FOR"];
-                if (!string.IsNullOrEmpty(result))
-                {
-                    if (result.IndexOf(".", StringComparison.Ordinal) == -1)
-                        result = null;
-                    else
-                    {
-                        if (result.IndexOf(",", StringComparison.Ordinal) != -1)
-                        {
-                            result = result.Replace("  ", "").Replace("'", "");
-                            var temporary = result.Split(",;".ToCharArray());
-                            foreach (var t in temporary)
-                            {
-                                if (IsIpAddress(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
-                                {
-                                    result = t;
-                                }
-                            }
-                            var str = result.Split(',');
-                            if (str.Length > 0)
-                                result = str[0].Trim();
-                        }
-                        else if (IsIpAddress(result))
-                            return result;
-                    }
-                }
-
-                if (string.IsNullOrEmpty(result))
-                {
-                    result = request.Headers["REMOTE_ADDR"];
-                }
-
-                if (string.IsNullOrEmpty(result))
-                {
-                    result = request.HttpContext.Connection.RemoteIpAddress.ToString();
-                }
-
-                if (string.IsNullOrEmpty(result) || result == "::1")
-                {
-                    result = "127.0.0.1";
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return result;
         }
     }
 }

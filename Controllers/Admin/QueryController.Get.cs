@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Block.Core;
 using SSCMS.Dto;
+using SSCMS.Utils;
 
 namespace SSCMS.Block.Controllers.Admin
 {
@@ -17,7 +18,7 @@ namespace SSCMS.Block.Controllers.Admin
 
             return new StringResult
             {
-                Value = BlockManager.GetIpAddress(Request)
+                Value = PageUtils.GetIpAddress(Request)
             };
         }
     }
